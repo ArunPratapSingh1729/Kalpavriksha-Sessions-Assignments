@@ -47,7 +47,7 @@ int main(){
           return 1;
       }
   }
-  numbers[Nnum++] = num;
+  numbers[Nnum++] = num; //for adding the last digit remaining
 
 
 for(int i=0; i<Onum; i++){
