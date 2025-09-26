@@ -12,8 +12,8 @@ int main(){
 
   printf("Enter the Input : \n");
   fgets(entry ,100, stdin);
-
-  for(int i =0;i<strlen(entry); i++){
+  int len = strlen(entry);
+  for(int i =0;i<len; i++){
       if (isdigit(entry[i]))
       {
           numbers[Nnum++] = entry[i] - '0';
@@ -33,9 +33,46 @@ int main(){
       }
   }
 
- printf("Total numbers of digits are %d \n" , Nnum);
+  if(Onum == Nnum){
+    printf("Invalid Expression \n");
+    return 1;
+  }
 
- printf("Total numbers of characters are %d \n", Onum);
+for(int i=0; i<Onum; i++){
+    int nextnum = numbers[i+1];
+    if (operators[i] == '/' || operators[i] == '*' || operators[i] == '%')
+    {
+        if (operators[i] == '/' && numbers[i + 1] == 0)
+        {
+            printf("Division by zero not allowed\n");
+            return 1;
+        }
+        else if (operators[i] == '/')
+        {
+            numbers[i] = numbers[i] / numbers[i + 1];
+        }
+        else if (operators[i] == '*')
+        {
+            numbers[i] = numbers[i] * numbers[i + 1];
+        }
+        else if (operators[i] == '%')
+        {
+            numbers[i] = numbers[i] % numbers[i + 1];
+        }
+        
+        for(int j = i+1; j < Nnum-1; j++){
+            numbers[j] = numbers[j+1];
+        }
+        for(int j=i; j < Onum-1; j++){
+            operators[j] = operators[j+1];
+        }
+        Nnum --;
+        Onum --;
+        i --;
+    }
+}
+
+printf("The result is %d  \n" , numbers[0]);
 
  return 0;
 } 
