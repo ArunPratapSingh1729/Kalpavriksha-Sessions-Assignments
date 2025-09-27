@@ -135,7 +135,7 @@ void DeleteUser(int id)
 
 int main()
 {
-
+      
     struct User u1 = {1, "Arun", 12};
     struct User u2 = {2, "Pratap", 21};
     struct User u3 = {3, "Singh", 22};
@@ -146,6 +146,7 @@ int main()
     AddUser(u2.id, u2.name, u2.age);
     AddUser(u3.id, u3.name, u3.age);
     // printf("Users added succesfully");
+    //Insretion of Users
 
     ReadUser(); // To Read The users Data
 
@@ -154,6 +155,7 @@ int main()
 
     DeleteUser(1);
     ReadUser(); // To Check the Deletion
+
 
     return 0;
 }
