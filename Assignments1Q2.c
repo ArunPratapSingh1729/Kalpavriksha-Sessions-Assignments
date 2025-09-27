@@ -101,6 +101,38 @@ void UpdateUser(int id, const char *name, int age)
     rename("temp.txt", "users.txt");
 }
 
+void DeleteUser(int id)
+{
+
+    FILE *f = fopen("users.txt", "r");
+    FILE *temp = fopen("temp.txt", "w");
+    if (f == NULL)
+    {
+        perror("Error ! \n");
+        return;
+    }
+    struct User user;
+    char line[100];
+
+    while (fgets(line, sizeof(line), f) != NULL)
+    {
+        sscanf(line, "%d %s %d", &user.id, user.name, &user.age);
+        if (id == user.id)
+        {
+            continue;
+        }
+        else
+        {
+            fprintf(temp, "%d %s %d \n", user.id, user.name, user.age);
+        }
+    }
+    fclose(f);
+    fclose(temp);
+
+    remove("users.txt");
+    rename("temp.txt", "users.txt");
+}
+
 int main()
 {
 
@@ -119,6 +151,9 @@ int main()
 
     UpdateUser(1, "Rahul", 10);
     ReadUser(); // To Check the Updation
+
+    DeleteUser(1);
+    ReadUser(); // To Check the Deletion
 
     return 0;
 }
