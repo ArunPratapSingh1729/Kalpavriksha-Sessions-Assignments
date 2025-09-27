@@ -69,6 +69,38 @@ void ReadUser()
     fclose(f);
 }
 
+void UpdateUser(int id, const char *name, int age)
+{
+
+    FILE *f = fopen("users.txt", "r");
+    FILE *temp = fopen("temp.txt", "w");
+    if (f == NULL)
+    {
+        perror("Error ! \n");
+        return;
+    }
+    struct User user;
+    char line[100];
+
+    while (fgets(line, sizeof(line), f) != NULL)
+    {
+        sscanf(line, "%d %s %d", &user.id, user.name, &user.age);
+        if (id == user.id)
+        {
+            fprintf(temp, "%d %s %d \n", id, name, age);
+        }
+        else
+        {
+            fprintf(temp, "%d %s %d \n", user.id, user.name, user.age);
+        }
+    }
+    fclose(f);
+    fclose(temp);
+
+    remove("users.txt");
+    rename("temp.txt", "users.txt");
+}
+
 int main()
 {
 
@@ -85,6 +117,8 @@ int main()
 
     ReadUser(); // To Read The users Data
 
+    UpdateUser(1, "Rahul", 10);
+    ReadUser(); // To Check the Updation
 
     return 0;
 }
