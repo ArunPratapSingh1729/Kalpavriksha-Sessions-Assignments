@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 struct User
 {
@@ -9,12 +10,40 @@ struct User
     int age;
 };
 
+int valdiation(const char *name, int age)
+{
+    if (age < 0 || age > 100)
+    {
+        printf("Invalid age : %d \n", age);
+        return 0;
+    }
+    if (strlen(name) == 0)
+    {
+        printf("ReEnter the name \n");
+        return 0;
+    }
+
+    for (int i = 0; name[i] != '\0'; i++)
+    {
+
+        if (!isalpha(name[i]))
+        {
+            printf("Enter the Correct name \n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
 void AddUser(int id, const char *name, int age)
 {
+    if (!valdiation(name, age))
+        return;
+
     FILE *f = fopen("users.txt", "r");
     if (f == NULL)
     {
-        FILE *f = fopen("users.txt", "a");
+        f = fopen("users.txt", "a");
     }
 
     int found = 0;
@@ -58,12 +87,19 @@ void ReadUser()
     }
     struct User user;
     char line[100];
+    int count = 0;
 
     printf("List Of All Users \n");
     while (fgets(line, sizeof(line), f) != NULL)
     {
+        count = 1;
         sscanf(line, "%d %s %d", &user.id, user.name, &user.age);
         printf("%d , %s, %d \n", user.id, user.name, user.age);
+    }
+
+    if (count == 0)
+    {
+        printf("No User Found \n");
     }
 
     fclose(f);
@@ -71,6 +107,8 @@ void ReadUser()
 
 void UpdateUser(int id, const char *name, int age)
 {
+    if (!valdiation(name, age))
+        return;
 
     FILE *f = fopen("users.txt", "r");
     FILE *temp = fopen("temp.txt", "w");
@@ -135,26 +173,75 @@ void DeleteUser(int id)
 
 int main()
 {
+    int choice;
+    struct User u;
 
-    struct User u1 = {1, "Arun", 12};
-    struct User u2 = {2, "Pratap", 21};
-    struct User u3 = {3, "Singh", 22};
+    while (1)
+    {
+        printf("1. Add the User\n");
+        printf("2. Read the Users\n");
+        printf("3. Update the User\n");
+        printf("4. Delete the User\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
 
-    // we can also use the array here like stuct User user[100];
+        scanf("%d", &choice);
+        getchar();
 
-    AddUser(u1.id, u1.name, u1.age);
-    AddUser(u2.id, u2.name, u2.age);
-    AddUser(u3.id, u3.name, u3.age);
-    // printf("Users added succesfully");
-    // Insretion of Users
+        switch (choice)
+        {
+        case 1:
+            printf("Enter User ID: ");
+            scanf("%d", &u.id);
+            getchar();
 
-    ReadUser(); // To Read The users Data
+            printf("Enter User Name: ");
+            fgets(u.name, sizeof(u.name), stdin);
+            u.name[strcspn(u.name, "\n")] = '\0';
 
-    UpdateUser(1, "Rahul", 10);
-    ReadUser(); // To Check the Updation
+            printf("Enter User Age: ");
+            scanf("%d", &u.age);
+            getchar();
 
-    DeleteUser(1);
-    ReadUser(); // To Check the Deletion
+            AddUser(u.id, u.name, u.age);
+            break;
+
+        case 2:
+            ReadUser();
+            break;
+
+        case 3:
+            printf("Enter User ID to update: ");
+            scanf("%d", &u.id);
+            getchar();
+
+            printf("Enter new Name: ");
+            fgets(u.name, sizeof(u.name), stdin);
+            u.name[strcspn(u.name, "\n")] = 0;
+
+            printf("Enter new Age: ");
+            scanf("%d", &u.age);
+            getchar();
+
+            UpdateUser(u.id, u.name, u.age);
+            break;
+
+        case 4:
+            printf("Enter User ID to delete: ");
+            scanf("%d", &u.id);
+            getchar();
+
+            DeleteUser(u.id);
+            break;
+
+        case 5:
+            printf("Exiting...\n");
+            exit(0);
+
+        default:
+            printf("Invalid choice!\n");
+        }
+    }
 
     return 0;
 }
