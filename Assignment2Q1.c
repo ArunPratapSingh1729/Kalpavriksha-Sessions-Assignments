@@ -53,7 +53,6 @@ void functiontoCalculatePerformace(char *Grade, char Performance[5])
     case 'D':
         strcpy(Performance, "**");
         break;
-    case 'F':
     default:
         strcpy(Performance, "");
         break;
@@ -88,12 +87,7 @@ void sort(struct Student S[])
         }
     }
 }
-
-int main()
-{
-    printf("Enter the number of Student Details you want to enter \n");
-    scanf("%d", &n);
-    getchar();
+void input(){
     float avg = 0; // local variable
     float sum = 0; // local variable
     char Grade;
@@ -185,7 +179,7 @@ int main()
         printf("\n");
     }
 
-    void sort(S);
+    sort(S);
 
     for (int i = 0; i < n; i++)
     {
@@ -196,6 +190,15 @@ int main()
     printf("Roll Numbers of All the Students are : \n");
 
     RecursionFunctionToPrintAllRollNumbers(S, 0);
+}
+
+int main()
+{
+    printf("Enter the number of Student Details you want to enter \n");
+    scanf("%d", &n);
+    getchar();
+    input();
+
 
     return 0;
 }
