@@ -87,12 +87,12 @@ void sort(struct Student S[])
         }
     }
 }
-void input(){
+void input(struct Student S[])
+{
     float avg = 0; // local variable
     float sum = 0; // local variable
     char Grade;
 
-    struct Student S[n];
     for (int i = 0; i < n; i++)
     {
 
@@ -178,7 +178,10 @@ void input(){
 
         printf("\n");
     }
+}
 
+void output(struct Student S[])
+{
     sort(S);
 
     for (int i = 0; i < n; i++)
@@ -197,8 +200,12 @@ int main()
     printf("Enter the number of Student Details you want to enter \n");
     scanf("%d", &n);
     getchar();
-    input();
 
+    struct Student S[n];
+
+    input(S);
+
+    output(S);
 
     return 0;
 }
