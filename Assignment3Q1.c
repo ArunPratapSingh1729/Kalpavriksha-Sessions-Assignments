@@ -2,29 +2,33 @@
 #include <stdlib.h>
 #include <time.h>
 
-void assign(int N, int ***arr)
+void assignRandomValues(int N, int ***arr)
 {
     for (int i = 0; i < N; i++)
+    {
         for (int j = 0; j < N; j++)
         {
             int *value = malloc(sizeof(int));
             *value = rand() % 256;
             *(*(arr + i) + j) = value;
         }
+    }
 }
 
-void printfunction(int N, int ***arr)
+void printMatrix(int N, int ***arr)
 {
     printf("\n");
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
-            printf("%3d ", *(*(*(arr + i) + j)));
+        {
+            printf("%d ", *(*(*(arr + i) + j)));
+        }
         printf("\n");
     }
 }
 
-void rotatefunction(int N, int ***arr)
+void rotateMatrix90Clockwise(int N, int ***arr)
 {
     for (int layer = 0; layer < N / 2; layer++)
     {
@@ -49,13 +53,15 @@ void rotatefunction(int N, int ***arr)
     }
 }
 
-void smoothfunction(int N, int ***arr)
+void smoothMatrix(int N, int ***arr)
 {
+    int sum, count; // declared outside the inner loop
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            int sum = 0, count = 0;
+            sum = 0;
+            count = 0;
 
             for (int dx = -1; dx <= 1; dx++)
             {
@@ -82,15 +88,22 @@ void smoothfunction(int N, int ***arr)
 
 int main()
 {
-    srand(time(NULL));
+    time_t t = time(NULL);
+    if (t == -1)
+    {
+        fprintf(stderr, "Error: Failed to get system time.\n");
+        return 1;
+    }
+    srand(t);
 
     int N;
     while (1)
-    {        
-        printf("Enter matix size: ");
+    {
+        printf("Enter matrix size: ");
         scanf("%d", &N);
-        
-        if(N < 2 && N > 10){
+
+        if (N < 2 || N > 10)
+        { // fixed condition
             printf("Invalid size \n");
             continue;
         }
@@ -103,18 +116,18 @@ int main()
         *(arr + i) = (int **)malloc(N * sizeof(int *));
     }
 
-    assign(N, arr);
+    assignRandomValues(N, arr);
 
     printf("Original Matrix:\n");
-    printfunction(N, arr);
+    printMatrix(N, arr);
 
-    rotatefunction(N, arr);
+    rotateMatrix90Clockwise(N, arr);
     printf("\nMatrix after 90 degree clockwise rotation:");
-    printfunction(N, arr);
+    printMatrix(N, arr);
 
-    smoothfunction(N, arr);
+    smoothMatrix(N, arr);
     printf("\nAfter Smoothing the Matrix:");
-    printfunction(N, arr);
+    printMatrix(N, arr);
 
     for (int i = 0; i < N; i++)
     {
