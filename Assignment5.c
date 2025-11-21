@@ -7,13 +7,13 @@
 #define NUM_BLOCKS 100
 #define NAME_SIZE 50
 
-typedef struct FreeBlock
+struct FreeBlock
 {
     int index;
     struct FreeBlock *next, *prev;
-} FreeBlock;
+};
 
-typedef struct FileNode
+struct FileNode
 {
     char name[NAME_SIZE];
     int isDir;
@@ -22,15 +22,15 @@ typedef struct FileNode
     struct FileNode *children;
     int blocks[NUM_BLOCKS];
     int blockCount;
-} FileNode;
+};
 
 char disk[NUM_BLOCKS][BLOCK_SIZE];
-FreeBlock *freeList = NULL;
-FileNode *root = NULL, *cwd = NULL;
+struct FreeBlock *freeList = NULL;
+struct FileNode *root = NULL, *cwd = NULL;
 
-FreeBlock *newBlock(int index)
+struct FreeBlock *newBlock(int index)
 {
-    FreeBlock *b = malloc(sizeof(FreeBlock));
+    struct FreeBlock *b = malloc(sizeof(struct FreeBlock));
     b->index = index;
     b->next = b->prev = NULL;
     return b;
@@ -40,7 +40,7 @@ void BlockListIntialization()
 {
     for (int i = 0; i < NUM_BLOCKS; i++)
     {
-        FreeBlock *b = newBlock(i);
+        struct FreeBlock *b = newBlock(i);
         if (!freeList)
             freeList = b->next = b->prev = b;
         else
@@ -51,8 +51,10 @@ void BlockListIntialization()
             freeList->prev = b;
         }
     }
+}
 
-    root = malloc(sizeof(FileNode));
+void RootIntialization(){
+    root = malloc(sizeof(struct FileNode));
     strcpy(root->name, "/");
     root->isDir = 1;
     root->parent = root;
@@ -61,11 +63,11 @@ void BlockListIntialization()
     cwd = root;
 }
 
-FreeBlock *AllocateBlock()
+struct FreeBlock *AllocateBlock()
 {
     if (!freeList)
         return NULL;
-    FreeBlock *block = freeList;
+   struct FreeBlock *block = freeList;
     if (block->next == block)
         freeList = NULL;
     else
@@ -79,7 +81,7 @@ FreeBlock *AllocateBlock()
 
 void FreeDiskBlock(int index)
 {
-    FreeBlock *temp = freeList;
+   struct FreeBlock *temp = freeList;
     if (temp)
     {
         do
@@ -90,7 +92,7 @@ void FreeDiskBlock(int index)
         } while (temp != freeList);
     }
 
-    FreeBlock *b = newBlock(index);
+    struct FreeBlock *b = newBlock(index);
     if (!freeList)
         freeList = b->next = b->prev = b;
     else
@@ -106,7 +108,7 @@ int IsValidName(const char *name)
 {
     if (!name || strlen(name) == 0 || strlen(name) >= NAME_SIZE)
         return 0;
-    if (strchr(name, '/') || strchr(name, ' ') || isdigit(name[0]))
+    if (strchr(name, '/') || strchr(name, ' '))
         return 0;
     return 1;
 }
@@ -115,37 +117,37 @@ int Exists(const char *name)
 {
     if (!cwd->children)
         return 0;
-    FileNode *cur = cwd->children;
+   struct FileNode *curr = cwd->children;
     do
     {
-        if (strcmp(cur->name, name) == 0)
+        if (strcmp(curr->name, name) == 0)
             return 1;
-        cur = cur->next;
-    } while (cur != cwd->children);
+        curr = curr->next;
+    } while (curr != cwd->children);
     return 0;
 }
 
-FileNode *FindNode(const char *name)
+struct FileNode *FindNode(const char *name)
 {
     if (!cwd->children)
         return NULL;
-    FileNode *cur = cwd->children;
+   struct FileNode *curr = cwd->children;
     do
     {
-        if (strcmp(cur->name, name) == 0)
-            return cur;
-        cur = cur->next;
-    } while (cur != cwd->children);
+        if (strcmp(curr->name, name) == 0)
+            return curr;
+        curr = curr->next;
+    } while (curr != cwd->children);
     return NULL;
 }
 
-void AddChild(FileNode *node)
+void AddChild(struct FileNode *node)
 {
     if (!cwd->children)
         cwd->children = node->next = node->prev = node;
     else
     {
-        FileNode *last = cwd->children->prev;
+        struct FileNode *last = cwd->children->prev;
         last->next = node;
         node->prev = last;
         node->next = cwd->children;
@@ -165,7 +167,7 @@ void mkdir(char *name)
         printf("Directory already exists.\n");
         return;
     }
-    FileNode *d = malloc(sizeof(FileNode));
+    struct FileNode *d = malloc(sizeof(struct FileNode));
     strcpy(d->name, name);
     d->isDir = 1;
     d->children = NULL;
@@ -185,7 +187,7 @@ void create(char *name)
         printf("File already exists.\n");
         return;
     }
-    FileNode *f = malloc(sizeof(FileNode));
+    struct FileNode *f = malloc(sizeof(struct FileNode));
     strcpy(f->name, name);
     f->isDir = 0;
     f->parent = cwd;
@@ -197,16 +199,16 @@ void write(char *name, char *content)
 {
     if (!name || strlen(name) == 0)
     {
-        printf("Error: Missing file name.\n");
+        printf("Missing file name.\n");
         return;
     }
     if (!content || strlen(content) == 0)
     {
-        printf("Error: No content to write.\n");
+        printf("No content to write.\n");
         return;
     }
 
-    FileNode *f = FindNode(name);
+    struct FileNode *f = FindNode(name);
     if (!f || f->isDir)
     {
         printf("Error: File not found.\n");
@@ -218,7 +220,7 @@ void write(char *name, char *content)
 
     for (int i = 0; i < blocksNeeded; i++)
     {
-        FreeBlock *b = AllocateBlock();
+      struct  FreeBlock *b = AllocateBlock();
         if (!b)
         {
             printf("Disk full.\n");
@@ -232,7 +234,7 @@ void write(char *name, char *content)
 
 void read(char *name)
 {
-    FileNode *f = FindNode(name);
+    struct FileNode *f = FindNode(name);
     if (!f || f->isDir)
     {
         printf("Error: File not found.\n");
@@ -245,7 +247,7 @@ void read(char *name)
 
 void delete(char *name)
 {
-    FileNode *f = FindNode(name);
+    struct FileNode *f = FindNode(name);
     if (!f || f->isDir)
     {
         printf("Error: File not found.\n");
@@ -269,7 +271,7 @@ void delete(char *name)
 
 void rmdir(char *name)
 {
-    FileNode *d = FindNode(name);
+    struct FileNode *d = FindNode(name);
     if (!d || !d->isDir)
     {
         printf("Error: Directory not found.\n");
@@ -293,7 +295,7 @@ void rmdir(char *name)
     free(d);
 }
 
-void RecursiveDelete(FileNode *node)
+void RecursiveDelete(struct FileNode *node)
 {
     if (!node)
         return;
@@ -315,7 +317,7 @@ void RecursiveDelete(FileNode *node)
 
 void forcermdir(char *name)
 {
-    FileNode *d = FindNode(name);
+    struct FileNode *d = FindNode(name);
     if (!d || !d->isDir)
     {
         printf("Error: Directory not found.\n");
@@ -331,12 +333,12 @@ void ls()
         printf("Empty\n");
         return;
     }
-    FileNode *cur = cwd->children;
+    struct FileNode *curr = cwd->children;
     do
     {
-        printf("%s%s\n", cur->name, cur->isDir ? "/" : "");
-        cur = cur->next;
-    } while (cur != cwd->children);
+        printf("%s%s\n", curr->name, curr->isDir ? "/" : "");
+        curr = curr->next;
+    } while (curr != cwd->children);
 }
 
 void cd(char *name)
@@ -345,7 +347,7 @@ void cd(char *name)
         cwd = cwd->parent;
     else
     {
-        FileNode *d = FindNode(name);
+        struct FileNode *d = FindNode(name);
         if (d && d->isDir)
             cwd = d;
         else
@@ -353,7 +355,7 @@ void cd(char *name)
     }
 }
 
-void pwd(FileNode *dir)
+void pwd(struct FileNode *dir)
 {
     if (dir == root)
     {
@@ -369,7 +371,7 @@ void df()
     int freeCount = 0;
     if (freeList)
     {
-        FreeBlock *cur = freeList;
+       struct FreeBlock *cur = freeList;
         do
         {
             freeCount++;
@@ -390,8 +392,10 @@ void ExitSystem()
 int main()
 {
     BlockListIntialization();
+    RootIntialization();
 
-    char cmd[50], arg1[50], arg2[512];
+        char cmd[50],
+        arg1[50], arg2[512];
 
     while (1)
     {
@@ -401,7 +405,7 @@ int main()
             break;
 
         if (!strcmp(cmd, "mkdir"))
-            scanf("%s", arg1), mkdir(arg1);
+            scanf("%s", arg1),mkdir(arg1) ;
         else if (!strcmp(cmd, "create"))
             scanf("%s", arg1), create(arg1);
         else if (!strcmp(cmd, "write"))
