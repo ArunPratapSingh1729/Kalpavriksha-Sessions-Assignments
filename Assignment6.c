@@ -42,18 +42,6 @@ Team *findTeamByName(const char *teamName)
     return NULL;
 }
 
-float getPerformanceIndex(Player *p)
-{
-    if (strcmp(p->role, "Batsman") == 0)
-        return (p->battingAverage * p->strikeRate) / 100.0f;
-    else if (strcmp(p->role, "Bowler") == 0)
-        return (p->wickets * 2.0f) + (100.0f - p->economyRate);
-    else if (strcmp(p->role, "All-rounder") == 0)
-        return ((p->battingAverage * p->strikeRate) / 100.0f) + (p->wickets * 2.0f);
-    else
-        return 0.0f;
-}
-
 int isDuplicatePlayer(int id, const char *name, const char *teamName)
 {
     Player *p = playersHead;
@@ -67,6 +55,19 @@ int isDuplicatePlayer(int id, const char *name, const char *teamName)
     }
     return 0;
 }
+
+float getPerformanceIndex(Player *p)
+{
+    if (strcmp(p->role, "Batsman") == 0)
+        return (p->battingAverage * p->strikeRate) / 100.0f;
+    else if (strcmp(p->role, "Bowler") == 0)
+        return (p->wickets * 2.0f) + (100.0f - p->economyRate);
+    else if (strcmp(p->role, "All-rounder") == 0)
+        return ((p->battingAverage * p->strikeRate) / 100.0f) + (p->wickets * 2.0f);
+    else
+        return 0.0f;
+}
+
 
 void initTeams()
 {
@@ -302,7 +303,7 @@ void addPlayer()
 
     char teamName[50];
     printf("Enter Team Name: ");
-    scanf("%49s", teamName);
+    scanf("%s", teamName);
 
     Team *t = findTeamByName(teamName);
     if (!t)
@@ -435,10 +436,10 @@ void displayTopKByRole()
     char role[20];
 
     printf("Enter Team Name: ");
-    scanf("%49s", teamName);
+    scanf("%s", teamName);
 
     printf("Enter Role (Batsman/Bowler/All-rounder): ");
-    scanf("%19s", role);
+    scanf("%s", role);
 
     printf("Enter number of players (K): ");
     scanf("%d", &k);
@@ -479,7 +480,7 @@ void displayAllByRoleGlobal()
 {
     char role[20];
     printf("Enter Role (Batsman/Bowler/All-rounder): ");
-    scanf("%19s", role);
+    scanf("%s", role);
 
     Player *list[200];
     int count = 0;
